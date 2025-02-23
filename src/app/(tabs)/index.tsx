@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 export default function Feed() {
   return (
     <View style={styles.container}>
-      <Text>Tab Page</Text>
+      <Text className="text-dark font-bold m-2">Tab Page</Text>
     </View>
   );
 }
