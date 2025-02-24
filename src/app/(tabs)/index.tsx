@@ -1,15 +1,15 @@
-import { StyleSheet, Text, View } from "react-native";
+import posts from "@/assets/data/posts.json";
+import { PostListItem } from "@/src/components/post-list-item";
+import { FlatList } from "react-native";
 
 export default function Feed() {
   return (
-    <View style={styles.container}>
-      <Text className="text-dark font-bold m-2">Tab Page</Text>
-    </View>
+    <FlatList
+      data={posts}
+      renderItem={({ item }) => <PostListItem post={item} />}
+      keyExtractor={(item) => item.id}
+      contentContainerStyle={{ gap: 10 }}
+      showsVerticalScrollIndicator={false}
+    />
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
