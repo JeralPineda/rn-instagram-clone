@@ -8,7 +8,12 @@ export default function Feed() {
       data={posts}
       renderItem={({ item }) => <PostListItem post={item} />}
       keyExtractor={(item) => item.id}
-      contentContainerStyle={{ gap: 10 }}
+      contentContainerStyle={{
+        gap: 10,
+        maxWidth: 512,
+        width: "100%",
+        alignItems: "center",
+      }}
       showsVerticalScrollIndicator={false}
     />
   );
