@@ -2,10 +2,19 @@ import { useEffect, useState } from "react";
 import { Image, Pressable, Text, TextInput, View } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { Button } from "@/src/components/button";
+import { upload } from "cloudinary-react-native";
+import { cld, uploadImage } from "@/src/lib/cloudinary";
 
 export default function CreatePost() {
   const [caption, setCaption] = useState("");
   const [image, setImage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!image) {
+      pickImage();
+    }
+  }, [image]);
 
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
@@ -13,7 +22,7 @@ export default function CreatePost() {
       mediaTypes: ["images"],
       allowsEditing: true,
       aspect: [4, 3],
-      quality: 1,
+      quality: 0.5,
     });
 
     if (!result.canceled) {
@@ -21,11 +30,19 @@ export default function CreatePost() {
     }
   };
 
-  useEffect(() => {
-    if (!image) {
-      pickImage();
-    }
-  }, [image]);
+  const createPost = async () => {
+    if (!image) return;
+
+    setIsLoading(true);
+    const response = await uploadImage(image);
+    setIsLoading(false);
+
+    // Save the post in database
+    console.log(
+      "🚀 ~ #40 new.tsx ~ createPost ~ image id:",
+      response?.public_id,
+    );
+  };
 
   return (
     <View className="p-3 items-center flex-1">
@@ -43,7 +60,6 @@ export default function CreatePost() {
         Change
       </Text>
 
-      {/* TextInput for caption */}
       <TextInput
         placeholder="What is on your mind"
         className="w-full p-3 border border-neutral-300 rounded-lg"
@@ -53,7 +69,7 @@ export default function CreatePost() {
 
       {/* Button */}
       <View className="mt-auto w-full">
-        <Button onPress={() => console.log("Share")} title="Share" />
+        <Button onPress={createPost} title="Share" isLoading={isLoading} />
       </View>
     </View>
   );
