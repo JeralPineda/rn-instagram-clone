@@ -1,4 +1,5 @@
 import { Button } from "@/src/components/button";
+import { supabase } from "@/src/lib/supabase";
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 import { Image, Text, TextInput, View } from "react-native";
@@ -78,7 +79,7 @@ export default function Profile() {
         onPress={() => console.log("UpdatSign Out")}
         title="UpdatSign Out"
       />
-      <Button onPress={() => console.log("Sign Out")} title="Sign Out" />
+      <Button onPress={() => supabase.auth.signOut()} title="Sign Out" />
     </View>
   );
 }
