@@ -4,11 +4,15 @@ import * as ImagePicker from "expo-image-picker";
 import { Button } from "@/src/components/button";
 import { upload } from "cloudinary-react-native";
 import { cld, uploadImage } from "@/src/lib/cloudinary";
+import { supabase } from "@/src/lib/supabase";
+import { router } from "expo-router";
+import { useAuth } from "@/src/providers/auth-provider";
 
 export default function CreatePost() {
   const [caption, setCaption] = useState("");
   const [image, setImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const { session } = useAuth();
 
   useEffect(() => {
     if (!image) {
@@ -42,6 +46,19 @@ export default function CreatePost() {
       "🚀 ~ #40 new.tsx ~ createPost ~ image id:",
       response?.public_id,
     );
+
+    const { data, error } = await supabase
+      .from("posts")
+      .insert([
+        {
+          caption,
+          image: response?.public_id,
+          user_id: session?.user.id,
+        },
+      ])
+      .select();
+
+    router.push("/(tabs)");
   };
 
   return (
