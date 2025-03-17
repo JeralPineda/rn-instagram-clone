@@ -1,12 +1,11 @@
-import { AntDesign, Feather, Ionicons } from "@expo/vector-icons";
-import { Image, Text, useWindowDimensions, View } from "react-native";
+import { cld } from "@/src/lib/cloudinary";
 import { POST } from "@/src/types";
 import { thumbnail } from "@cloudinary/url-gen/actions/resize";
-import { byRadius } from "@cloudinary/url-gen/actions/roundCorners";
 import { FocusOn } from "@cloudinary/url-gen/qualifiers/focusOn";
 import { focusOn } from "@cloudinary/url-gen/qualifiers/gravity";
+import { AntDesign, Feather, Ionicons } from "@expo/vector-icons";
 import { AdvancedImage } from "cloudinary-react-native";
-import { cld } from "@/src/lib/cloudinary";
+import { Text, useWindowDimensions, View } from "react-native";
 
 export function PostListItem({ post }: { post: POST }) {
   const { width } = useWindowDimensions();
@@ -14,7 +13,7 @@ export function PostListItem({ post }: { post: POST }) {
   const image = cld.image(post.image);
   image.resize(thumbnail().width(width).height(width));
 
-  const avatar = cld.image(post.user.avatar_url);
+  const avatar = cld.image(post.user.avatar_url || "default_user");
   avatar.resize(
     thumbnail().width(48).height(48).gravity(focusOn(FocusOn.face())),
   );
@@ -28,7 +27,9 @@ export function PostListItem({ post }: { post: POST }) {
           className="w-12 aspect-square rounded-full"
         />
 
-        <Text className="font-semibold">{post.user.username}</Text>
+        <Text className="font-semibold">
+          {post.user.username || "New user"}
+        </Text>
       </View>
 
       {/* Content */}
