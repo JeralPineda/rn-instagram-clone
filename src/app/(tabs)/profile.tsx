@@ -1,14 +1,64 @@
 import { Button } from "@/src/components/button";
+import { TextInput } from "@/src/components/text-input";
 import { supabase } from "@/src/lib/supabase";
+import { useAuth } from "@/src/providers/auth-provider";
 import * as ImagePicker from "expo-image-picker";
-import { useState } from "react";
-import { Image, Text, TextInput, View } from "react-native";
+import { useEffect, useState } from "react";
+import { Alert, Image, Text, View } from "react-native";
 
 export default function Profile() {
   const [image, setImage] = useState<string | null>(null);
   const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [website, setWebsite] = useState("");
+  const [bio, setBio] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { user } = useAuth();
+
+  useEffect(() => {
+    getProile();
+  }, []);
+
+  const getProile = async () => {
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", user.id)
+      .single();
+
+    console.log("🚀 profile.tsx -> #43 ~ data:", JSON.stringify(data, null, 2));
+
+    if (error) {
+      Alert.alert("Failed to fetch profile");
+    }
+
+    setUsername(data?.username);
+    setBio(data?.bio);
+  };
+
+  const updateProfile = async () => {
+    if (!user) return;
+
+    setIsLoading(true);
+
+    const updatedProfile = {
+      id: user.id,
+      username,
+      bio,
+    };
+
+    const { data, error } = await supabase
+      .from("profiles")
+      .upsert(updatedProfile);
+
+    setIsLoading(false);
+
+    if (error) {
+      console.log("🚀 profile.tsx -> #54 ~ error:", error);
+      Alert.alert("Failed to update profile");
+    }
+  };
 
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
@@ -43,42 +93,26 @@ export default function Profile() {
         Change
       </Text>
 
-      {/* Form */}
-      <View>
-        <Text className="mb-2 text-gray-700">Email</Text>
-        <TextInput
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-          className="w-full p-3 border border-neutral-300 rounded-lg"
-        />
-      </View>
+      <TextInput
+        label="Username"
+        placeholder="Username"
+        value={username}
+        onChangeText={setUsername}
+        className="w-full p-3 border border-neutral-300 rounded-lg"
+      />
 
-      <View>
-        <Text className="mb-2 text-gray-700">Username</Text>
-        <TextInput
-          placeholder="Username"
-          value={username}
-          onChangeText={setUsername}
-          className="w-full p-3 border border-neutral-300 rounded-lg"
-        />
-      </View>
-
-      <View>
-        <Text className="mb-2 text-gray-700">Website</Text>
-        <TextInput
-          placeholder="Website"
-          value={website}
-          onChangeText={setWebsite}
-          className="w-full p-3 border border-neutral-300 rounded-lg"
-        />
-      </View>
+      <TextInput
+        label="Bio"
+        placeholder="Bio"
+        value={bio}
+        onChangeText={setBio}
+        className="w-full p-3 border border-neutral-300 rounded-lg"
+        multiline
+        numberOfLines={3}
+      />
 
       {/* Button */}
-      <Button
-        onPress={() => console.log("UpdatSign Out")}
-        title="UpdatSign Out"
-      />
+      <Button onPress={updateProfile} title="Update" isLoading={isLoading} />
       <Button onPress={() => supabase.auth.signOut()} title="Sign Out" />
     </View>
   );
