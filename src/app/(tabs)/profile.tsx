@@ -1,13 +1,17 @@
 import { Button } from "@/src/components/button";
 import { TextInput } from "@/src/components/text-input";
+import { cld, uploadImage } from "@/src/lib/cloudinary";
 import { supabase } from "@/src/lib/supabase";
 import { useAuth } from "@/src/providers/auth-provider";
+import { thumbnail } from "@cloudinary/url-gen/actions/resize";
+import { AdvancedImage } from "cloudinary-react-native";
 import * as ImagePicker from "expo-image-picker";
 import { useEffect, useState } from "react";
 import { Alert, Image, Text, View } from "react-native";
 
 export default function Profile() {
   const [image, setImage] = useState<string | null>(null);
+  const [remoteImage, setRemoteImage] = useState<string | null>(null);
   const [username, setUsername] = useState("");
   const [bio, setBio] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -27,14 +31,13 @@ export default function Profile() {
       .eq("id", user.id)
       .single();
 
-    console.log("🚀 profile.tsx -> #43 ~ data:", JSON.stringify(data, null, 2));
-
     if (error) {
       Alert.alert("Failed to fetch profile");
     }
 
     setUsername(data?.username);
     setBio(data?.bio);
+    setRemoteImage(data?.avatar_url);
   };
 
   const updateProfile = async () => {
@@ -47,6 +50,11 @@ export default function Profile() {
       username,
       bio,
     };
+
+    if (image) {
+      const response = await uploadImage(image);
+      updatedProfile.avatar_url = response.public_id;
+    }
 
     const { data, error } = await supabase
       .from("profiles")
@@ -74,12 +82,23 @@ export default function Profile() {
     }
   };
 
+  let remoteCldImage;
+  if (remoteImage) {
+    remoteCldImage = cld.image(remoteImage);
+    remoteCldImage.resize(thumbnail().width(300).height(300));
+  }
+
   return (
     <View className="p-3 gap-4">
       {/* Avatar image picker */}
       {image ? (
         <Image
           source={{ uri: image }}
+          className="w-52 aspect-square self-center rounded-full bg-slate-300"
+        />
+      ) : remoteCldImage ? (
+        <AdvancedImage
+          cldImg={remoteCldImage}
           className="w-52 aspect-square self-center rounded-full bg-slate-300"
         />
       ) : (
