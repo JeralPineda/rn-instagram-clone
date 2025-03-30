@@ -3,6 +3,7 @@ export type POST = {
   image: string;
   image_url: string;
   caption: string;
+  media_type: "image" | "video";
   user: {
     id: string;
     avatar_url: string;

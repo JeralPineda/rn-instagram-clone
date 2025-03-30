@@ -6,6 +6,7 @@ import { focusOn } from "@cloudinary/url-gen/qualifiers/gravity";
 import { AntDesign, Feather, Ionicons } from "@expo/vector-icons";
 import { AdvancedImage } from "cloudinary-react-native";
 import { Text, useWindowDimensions, View } from "react-native";
+import PostContent from "./post-content";
 
 export function PostListItem({ post }: { post: POST }) {
   const { width } = useWindowDimensions();
@@ -33,7 +34,7 @@ export function PostListItem({ post }: { post: POST }) {
       </View>
 
       {/* Content */}
-      <AdvancedImage cldImg={image} className="w-full aspect-[4/3]" />
+      <PostContent post={post} />
 
       {/* Footer */}
       <View className="flex-row gap-3 p-3">
