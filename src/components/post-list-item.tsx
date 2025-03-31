@@ -1,8 +1,9 @@
 import { POST } from "@/src/types";
-import { AntDesign, Feather, Ionicons } from "@expo/vector-icons";
+import { Feather, Ionicons } from "@expo/vector-icons";
 import { Text, View } from "react-native";
 import { PostAvatar } from "./post-avatar";
 import PostContent from "./post-content";
+import { PostLike } from "./post-like";
 
 export function PostListItem({ post }: { post: POST }) {
   return (
@@ -21,7 +22,8 @@ export function PostListItem({ post }: { post: POST }) {
 
       {/* Footer */}
       <View className="flex-row gap-3 p-3">
-        <AntDesign name="hearto" size={20} />
+        <PostLike post={post} />
+
         <Ionicons name="chatbubble-outline" size={20} />
         <Feather name="send" size={20} />
 

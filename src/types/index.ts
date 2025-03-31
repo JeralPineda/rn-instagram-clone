@@ -11,3 +11,10 @@ export type POST = {
     username: string;
   };
 };
+
+export interface LIKE {
+  created_at: string;
+  id: number;
+  post_id: number;
+  user_id: string;
+}
