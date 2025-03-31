@@ -1,32 +1,15 @@
-import { cld } from "@/src/lib/cloudinary";
 import { POST } from "@/src/types";
-import { thumbnail } from "@cloudinary/url-gen/actions/resize";
-import { FocusOn } from "@cloudinary/url-gen/qualifiers/focusOn";
-import { focusOn } from "@cloudinary/url-gen/qualifiers/gravity";
 import { AntDesign, Feather, Ionicons } from "@expo/vector-icons";
-import { AdvancedImage } from "cloudinary-react-native";
-import { Text, useWindowDimensions, View } from "react-native";
+import { Text, View } from "react-native";
+import { PostAvatar } from "./post-avatar";
 import PostContent from "./post-content";
 
 export function PostListItem({ post }: { post: POST }) {
-  const { width } = useWindowDimensions();
-
-  const image = cld.image(post.image);
-  image.resize(thumbnail().width(width).height(width));
-
-  const avatar = cld.image(post.user.avatar_url || "default_user");
-  avatar.resize(
-    thumbnail().width(48).height(48).gravity(focusOn(FocusOn.face())),
-  );
-
   return (
     <View className="bg-white">
       {/* Header */}
       <View className="p-3 flex-row items-center gap-2">
-        <AdvancedImage
-          cldImg={avatar}
-          className="w-12 aspect-square rounded-full"
-        />
+        <PostAvatar post={post} />
 
         <Text className="font-semibold">
           {post.user.username || "New user"}
